@@ -43,22 +43,22 @@ This project explores how a pretrained MobileNetV2 model classifies images and h
 I asked AI (Co-Pilot) to explain the 'base_classifier.py' script.
 Here is a summary of what each part does:
 
-- **Imports TensorFlow, Keras utilities, and NumPy**
+Imports TensorFlow, Keras utilities, and NumPy:
 These libraries handle the model, image loading, preprocessing, and numerical operations.
 Example: `import tensorflow as tf`
 
-- **Loads the pretrained MobileNetV2 model**
+Loads the pretrained MobileNetV2 model:
 The model come with ImageNet weights, giving it knowledge of 1,000 object categories.
 Example: `model = MobileNetV2(weights="imagenet")`
 
-- **Defines a function to classify an image**
+Defines a function to classify an image:
 This function loads the image, resizes it, converts it to an array, preprocesses it, runs the model, and prints the top-3 predictions. Example: `img = image.load_img(image_path, target_size=(224, 224))`
 
-- **Uses a loop to classify multiple images**
+Uses a loop to classify multiple images:
 The script continues to ask for filenames until the user types 'exit'.
 Example: `while True:`
 
-- **Includes error handling**
+Includes error handling:
 If the image path is wrong or unreadable, the script prints an error instead of crashing.
 Example: `except Exception as e:`
 
@@ -71,7 +71,7 @@ Running the basic classifier helped me understand how a pretrained model process
 ## Grad-CAM Visualization
 Grad-CAM can be added by accessing the final convolutional layer of MobileNetV2, computing the gradient of the predicted class with respect to that layer’s feature maps, and combining them to create a heatmap. The heatmap is then resized and overlaid on the original image to show which regions influenced the model’s decision. This requires modifying the classifier to extract intermediate activations and gradients during prediction.
 
-## Understanding the Grad-CAM Algorithm
+**Understanding the Grad-CAM Algorithm**
 To better understand how the classifier makes decisions, I asked AI to explain the Grad-CAM algorithm.
 
 **What Grad-CAM Does**
@@ -107,24 +107,35 @@ After integrating Grad-CAM into the classifier, I generated a heatmap for the sa
 - Lower activation across the chick’s body, with its outline still faintly visible  
 - Minimal activation on the head, eyes, and feathers compared to the high‑contrast background  
 
-**Interpretation**
-The Grad-CAM output shows that the model's strongest gradient responses occured in the high-contrast background rather than on the chick itself. This suggests that the final convolutional layer produced a coarse or noisy activations, causing the model to emphasize edges and color transisions more than the subject. Even so, the chick's outline is still visible in cooler colors, indicating that the model did register the presence of the bird, just with the lower intensity compared to the surrounding background.
-
 **Conclusion**
-Overall, the Grad-CAM visualization reveals that while the classifier does not detect the chick, its attention is not strongly centered on the most semantically meaningful regions of the image. Instead, the model's gradients are dominated by the bright, stylized background. This highlights a limitation of Grad-CAM on images with heavy color effects or soft subject contrast, and it suggests that additional preprocessing or fine-tuning could help the model focus more reliably on the intended object.
+The Grad-CAM visualization reveals that while the classifier does not detect the chick, its attention is not strongly centered on the most semantically meaningful regions of the image. Instead, the model's gradients are dominated by the bright, stylized background. This highlights a limitation of Grad-CAM on images with heavy color effects or soft subject contrast, and it suggests that additional preprocessing or fine-tuning could help the model focus more reliably on the intended object.
 
 ---
 
 ## Creative Filter Experiment
-*(To be added after running basic_filter.py)*
+For part 2 of the project , I worked with 'basic_filter.py', which orignially applied a simple Gaussian blur. After understanding how the blur function worked, I extended the program by creating a second filter: a custom Vaporwave-style color transformation.
 
-Include:
-- The filtered image
-- Applied effect
-- Reason for choice
-- How the filter changed the model's predictions (if applicable)
+**Understanding the Blur Filter**
+The original 'apply_blur_filter()' function applies a Gaussian blur with a radius of 2. This smooths the image by averaging nearby pixels, which reduce sharp edges and fine detail. The result is a softer, less textured version of the original image. This helped me understand how simple mathematial operations applied to pixel neighborhoods can significantly change visual detail.
+
+**Designing the Vaporwave Filter**
+I created a second filter called 'apply_vaporwave_filter()' to produce a stylized neon effect.
+
+This filter:
+- Increases the red and blue channels
+- Reduces the green channel 
+- Boosts color saturation
+- Applies a nonlinear contrast curve
+
+These adjustments create a pink and purple color shift with brighter midtones, giving the image a dramatic color shift.
+
+**Effect on the Image and Model**
+After applying the vaporwave filter, the image appeared more vibrant and high-contrast. Neutral colors were replaced with strong neon tones of pink, red, and purple. Texture and edges became more blurred and fuzzy.
+
+**Reflection**
+This experiment demonstrated that preprocessing choices matter. Small changes in color balance, saturation, and contrast can affect both human perception and machine classification. It reinforced the idea that neural networks rely heavily on texture and color patterns rather than true semantic understanding.
 
 ---
 
-## Conclusion
+## Overall Conclusion
 This project has helped me to understand both the strengths and limitations of pretrained image classifiers. Running the model, interpreting its predictions, and visualizing its attention through Grad-CAM made the process feel more transparent and less like a black box. The creative filter experiement also showed how small visual changes can shift the model's perception.
